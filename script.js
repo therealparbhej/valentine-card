@@ -282,7 +282,10 @@ function openCard() {
 const yesButton = document.querySelector(".buttons .yes");
 const noButton = document.querySelector(".buttons .no");
 
-yesButton.addEventListener("click", () => {
+const handleYesClick = (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  
   // Vibration feedback
   if (navigator.vibrate) {
     navigator.vibrate(200);
@@ -333,9 +336,15 @@ yesButton.addEventListener("click", () => {
 
   // Clear interval after 30 seconds to prevent performance issues
   setTimeout(() => clearInterval(confettiInterval), 30000);
-});
+};
 
-noButton.addEventListener("click", () => {
+yesButton.addEventListener("click", handleYesClick);
+yesButton.addEventListener("touchend", handleYesClick);
+
+const handleNoClick = (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  
   // Vibration feedback
   if (navigator.vibrate) {
     navigator.vibrate([100, 50, 100]);
@@ -373,7 +382,10 @@ noButton.addEventListener("click", () => {
     height: "100%",
     duration: 0.7
   });
-});
+};
+
+noButton.addEventListener("click", handleNoClick);
+noButton.addEventListener("touchend", handleNoClick);
 
 // Enhanced "No" button dodge behavior for mobile
 let noButtonMoveCount = 0;
@@ -421,10 +433,8 @@ const dodgeNoButton = () => {
 
 // Use both mouseover and touchstart for "No" button
 noButton.addEventListener("mouseover", dodgeNoButton);
-noButton.addEventListener("touchstart", (e) => {
-  e.preventDefault();
-  dodgeNoButton();
-}, { passive: false });
+// Don't dodge on touchstart as it interferes with the click on mobile
+// The mouseover will handle desktop behavior
 
 // Animation loop
 function animate() {
