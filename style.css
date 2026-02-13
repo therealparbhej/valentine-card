@@ -1,0 +1,369 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  width: 100vw;
+  height: 100vh;
+  background: #f0f0f0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  perspective: 1000px;
+  overflow: hidden;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  position: fixed;
+  touch-action: none;
+}
+
+#canvas-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.wrapper {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: url("https://images.unsplash.com/photo-1503455637927-730bce8583c0?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+
+.card {
+  position: relative;
+  width: 90vw;
+  max-width: 400px;
+  height: 500px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 20px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+  transform-origin: top;
+  transform-style: preserve-3d;
+  transition: transform 0.5s ease;
+  overflow: hidden;
+}
+
+img {
+  border-radius: 8px;
+  max-width: 100%;
+  height: auto;
+}
+
+.card-content {
+  padding: 20px;
+  opacity: 0;
+  transition: opacity 0.3s;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  height: 100%;
+}
+
+.card.open {
+  transform: rotateX(0deg);
+}
+
+.card.open .card-content {
+  opacity: 1;
+}
+
+.cord-wrapper {
+  position: absolute;
+  top: -100px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50px;
+  height: 200px;
+  cursor: grab;
+  touch-action: none;
+  z-index: 100;
+}
+
+.plug {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 50px;
+  height: 70px;
+  fill: #fe3a65;
+  cursor: grab;
+  transform: translateY(140px);
+  transform-origin: 50% 0%;
+  z-index: 20;
+  touch-action: none;
+}
+
+.plug:active {
+  cursor: grabbing;
+}
+
+.ribbon {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 10px;
+  height: 100%;
+  transform-origin: top;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.valentine-text {
+  font-size: 22px;
+  margin-bottom: 15px;
+  color: #fe3a65;
+}
+
+h1 {
+  font-size: 28px;
+  color: #fe3a65;
+  margin-bottom: 15px;
+}
+
+.valentine-congrats h1,
+.valentine-sad h1 {
+  margin-bottom: 10px;
+}
+
+.valentine-congrats p,
+.valentine-sad p {
+  font-size: 18px;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.please,
+.congrats,
+.sad {
+  width: 100%;
+  max-width: 280px;
+  height: auto;
+}
+
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 20px;
+  width: 100%;
+}
+
+.buttons button {
+  padding: 15px 30px;
+  font-size: 18px;
+  font-weight: 600;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  min-width: 130px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  touch-action: manipulation;
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+
+.buttons button:active {
+  transform: scale(0.95);
+}
+
+.buttons button.yes {
+  background-color: #4caf50;
+  color: white;
+  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+}
+
+.buttons button.yes:active {
+  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.4);
+}
+
+.buttons button.no {
+  background-color: #f44336;
+  color: white;
+  box-shadow: 0 4px 15px rgba(244, 67, 54, 0.4);
+  position: relative;
+}
+
+.buttons button.no:active {
+  box-shadow: 0 2px 8px rgba(244, 67, 54, 0.4);
+}
+
+.text-intro {
+  color: #333;
+  position: absolute;
+  bottom: -50px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 18px;
+  text-transform: capitalize;
+  font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+  text-align: center;
+  white-space: nowrap;
+  background: rgba(255, 255, 255, 0.8);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 500;
+}
+
+/* Mobile-specific adjustments */
+@media (max-width: 768px) {
+  .card {
+    width: 85vw;
+    max-width: 350px;
+    height: 450px;
+  }
+
+  h1 {
+    font-size: 24px;
+  }
+
+  .valentine-text {
+    font-size: 18px;
+  }
+
+  .valentine-congrats p,
+  .valentine-sad p {
+    font-size: 16px;
+  }
+
+  .buttons button {
+    padding: 12px 25px;
+    font-size: 16px;
+    min-width: 110px;
+  }
+
+  .text-intro {
+    font-size: 16px;
+    bottom: -45px;
+  }
+
+  .please,
+  .congrats,
+  .sad {
+    max-width: 240px;
+  }
+}
+
+@media (max-width: 480px) {
+  .card {
+    width: 90vw;
+    max-width: 320px;
+    height: 420px;
+  }
+
+  h1 {
+    font-size: 22px;
+    margin-bottom: 10px;
+  }
+
+  .valentine-text {
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+
+  .valentine-congrats p,
+  .valentine-sad p {
+    font-size: 14px;
+    margin-bottom: 10px;
+  }
+
+  .buttons {
+    gap: 12px;
+  }
+
+  .buttons button {
+    padding: 10px 20px;
+    font-size: 15px;
+    min-width: 100px;
+  }
+
+  .text-intro {
+    font-size: 14px;
+    bottom: -40px;
+    padding: 6px 12px;
+  }
+
+  .please,
+  .congrats,
+  .sad {
+    max-width: 200px;
+  }
+
+  .cord-wrapper {
+    width: 40px;
+  }
+
+  .plug {
+    width: 40px;
+    height: 60px;
+  }
+
+  .ribbon {
+    width: 8px;
+  }
+}
+
+/* Landscape mode on mobile */
+@media (max-height: 600px) and (orientation: landscape) {
+  .card {
+    height: 80vh;
+    max-height: 400px;
+  }
+
+  h1 {
+    font-size: 20px;
+    margin-bottom: 8px;
+  }
+
+  .valentine-text {
+    font-size: 14px;
+    margin-bottom: 8px;
+  }
+
+  .buttons {
+    margin-top: 10px;
+    gap: 10px;
+  }
+
+  .buttons button {
+    padding: 8px 16px;
+    font-size: 14px;
+  }
+
+  .text-intro {
+    font-size: 13px;
+    bottom: -35px;
+  }
+
+  .card-content {
+    padding: 15px;
+  }
+}
+
+/* Prevent text selection and improve touch experience */
+.card,
+.buttons,
+.valentine-text,
+.valentine-congrats,
+.valentine-sad {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
