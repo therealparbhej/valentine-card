@@ -282,6 +282,7 @@ function openCard() {
 const yesButton = document.querySelector(".buttons .yes");
 const noButton = document.querySelector(".buttons .no");
 
+// YES BUTTON - Simple and straightforward
 const handleYesClick = (e) => {
   e.preventDefault();
   e.stopPropagation();
@@ -338,9 +339,14 @@ const handleYesClick = (e) => {
   setTimeout(() => clearInterval(confettiInterval), 30000);
 };
 
+// Add Yes button listeners
 yesButton.addEventListener("click", handleYesClick);
-yesButton.addEventListener("touchend", handleYesClick);
+yesButton.addEventListener("touchend", (e) => {
+  e.preventDefault();
+  handleYesClick(e);
+}, { passive: false });
 
+// NO BUTTON - Handle sad path (only if they manage to click it)
 const handleNoClick = (e) => {
   e.preventDefault();
   e.stopPropagation();
@@ -384,50 +390,20 @@ const handleNoClick = (e) => {
   });
 };
 
-noButton.addEventListener("click", handleNoClick);
-noButton.addEventListener("touchend", handleNoClick);
-
-// Enhanced "No" button dodge behavior for mobile
+// NO BUTTON DODGE - Make it move away!
 let noButtonMoveCount = 0;
-const maxNoButtonMoves = 10;
-let noButtonDodgeTimeout;
+const maxNoButtonMoves = 20;
 
-const dodgeNoButton = (e) => {
-  // If this is a touch event that's actually trying to click, don't dodge
-  if (e && e.type === 'touchstart') {
-    // Check if it's a quick tap (likely a click attempt)
-    const touchStartTime = Date.now();
-    const touchHandler = (endEvent) => {
-      const touchDuration = Date.now() - touchStartTime;
-      // If touch duration is less than 200ms, it's a tap/click - don't dodge
-      if (touchDuration < 200) {
-        clearTimeout(noButtonDodgeTimeout);
-        return;
-      }
-      document.removeEventListener('touchend', touchHandler);
-    };
-    document.addEventListener('touchend', touchHandler, { once: true });
-    
-    // Set a timeout to dodge only if touch is held
-    noButtonDodgeTimeout = setTimeout(() => {
-      performDodge();
-    }, 200);
-    return;
-  }
-  
-  performDodge();
-};
-
-const performDodge = () => {
+const dodgeNoButton = () => {
   if (noButtonMoveCount >= maxNoButtonMoves) {
-    // After max moves, make it easier to click
+    // After 20 dodges, allow the click
     return;
   }
 
   noButtonMoveCount++;
   
-  const minDisplacement = dimensions.width < 480 ? 80 : 100;
-  const maxDisplacement = dimensions.width < 480 ? 300 : 500;
+  const minDisplacement = dimensions.width < 480 ? 70 : 100;
+  const maxDisplacement = dimensions.width < 480 ? 200 : 350;
 
   const getRandomDisplacement = (min, max) => {
     let displacement = Math.random() * (max - min) + min;
@@ -458,11 +434,29 @@ const performDodge = () => {
   });
 };
 
-// Use both mouseover and touchstart for "No" button
-noButton.addEventListener("mouseover", dodgeNoButton);
+// Desktop: dodge on mouseenter
+noButton.addEventListener("mouseenter", dodgeNoButton);
+
+// Mobile: dodge on touchstart BEFORE any click can happen
 noButton.addEventListener("touchstart", (e) => {
-  dodgeNoButton(e);
+  if (noButtonMoveCount < maxNoButtonMoves) {
+    dodgeNoButton();
+  }
 }, { passive: true });
+
+// Only allow click/touchend after max dodges
+noButton.addEventListener("click", (e) => {
+  if (noButtonMoveCount >= maxNoButtonMoves) {
+    handleNoClick(e);
+  }
+});
+
+noButton.addEventListener("touchend", (e) => {
+  if (noButtonMoveCount >= maxNoButtonMoves) {
+    e.preventDefault();
+    handleNoClick(e);
+  }
+}, { passive: false });
 
 // Animation loop
 function animate() {
