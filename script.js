@@ -390,8 +390,35 @@ noButton.addEventListener("touchend", handleNoClick);
 // Enhanced "No" button dodge behavior for mobile
 let noButtonMoveCount = 0;
 const maxNoButtonMoves = 10;
+let noButtonDodgeTimeout;
 
-const dodgeNoButton = () => {
+const dodgeNoButton = (e) => {
+  // If this is a touch event that's actually trying to click, don't dodge
+  if (e && e.type === 'touchstart') {
+    // Check if it's a quick tap (likely a click attempt)
+    const touchStartTime = Date.now();
+    const touchHandler = (endEvent) => {
+      const touchDuration = Date.now() - touchStartTime;
+      // If touch duration is less than 200ms, it's a tap/click - don't dodge
+      if (touchDuration < 200) {
+        clearTimeout(noButtonDodgeTimeout);
+        return;
+      }
+      document.removeEventListener('touchend', touchHandler);
+    };
+    document.addEventListener('touchend', touchHandler, { once: true });
+    
+    // Set a timeout to dodge only if touch is held
+    noButtonDodgeTimeout = setTimeout(() => {
+      performDodge();
+    }, 200);
+    return;
+  }
+  
+  performDodge();
+};
+
+const performDodge = () => {
   if (noButtonMoveCount >= maxNoButtonMoves) {
     // After max moves, make it easier to click
     return;
@@ -433,8 +460,9 @@ const dodgeNoButton = () => {
 
 // Use both mouseover and touchstart for "No" button
 noButton.addEventListener("mouseover", dodgeNoButton);
-// Don't dodge on touchstart as it interferes with the click on mobile
-// The mouseover will handle desktop behavior
+noButton.addEventListener("touchstart", (e) => {
+  dodgeNoButton(e);
+}, { passive: true });
 
 // Animation loop
 function animate() {
